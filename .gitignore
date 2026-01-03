@@ -1,0 +1,19 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Editor
+.vscode/
+
+# Scraped data / outputs
+leu_*/
+downloads/
+images/
+extracted_data/
+
+# Archives
+*.zip
+
+# OS junk
+.DS_Store
