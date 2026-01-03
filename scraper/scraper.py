@@ -28,12 +28,12 @@ def scrape_site(
             )
 
             if img:
-                data["source_image_path"] = img["source_image_path"]
+                data["image_path"] = img["image_path"]
                 data["image_url"] = img["image_url"]
             else:
-                data["source_image_path"] = None
+                data["image_path"] = None
         else:
-            data["source_image_path"] = None
+            data["image_path"] = None
 
         db_handler.insert_data(data)
 
