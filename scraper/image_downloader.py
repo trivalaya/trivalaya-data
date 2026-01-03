@@ -22,7 +22,7 @@ def download_image(config, lot_number, auction_id, image_url=None):
         response = get(image_url)
         source_path.write_bytes(response.content)
         return {
-            "source_image_path": str(source_path),
+            "image_path": str(source_path),
             "image_url": image_url
         }
     except Exception as exc:
