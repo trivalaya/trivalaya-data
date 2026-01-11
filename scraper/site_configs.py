@@ -190,6 +190,37 @@ SITE_CONFIGS = {
         },
         "crawl_delay": 2,
     },
+    "numisbids": {
+        "name": "numisbids",
+        "base_url": "https://www.numisbids.com/n.php?p=lot&sid={auction_id}&lot={lot_number}",
+        "folder": "numisbids_{auction_id}",
+        "parsers": {
+            # Title: First bold text in description areas
+            "title": "(//div[@class='lot_description']//b)[1]/text() | //div[@class='lotdesc']//b[1]/text()",
+            
+            # Description: Return the DIV node (lxml handles text extraction)
+            "description": "//div[@class='lot_description'] | //div[@class='lotdesc']",
+            
+            # Current Bid: Look for price near 'Current Bid' label
+            "current_bid": "//div[contains(., 'Current Bid')]//span/text() | //td[contains(., 'Current Bid')]/following-sibling::td//text()",
+        },
+        
+        # REMOVED image_url_pattern because folder structures vary (e.g. 'kunker/e89')
+        
+        # FIXED XPath: 
+        # 1. Searches for links containing '.jpg' to avoid 'saleinformation.php'
+        # 2. Checks both high-res anchor tags (href) and direct images (src)
+        "image_url_xpath": "//a[contains(@href, 'hosted') and contains(@href, '.jpg')]/@href | //img[contains(@src, 'hosted') and contains(@src, '.jpg')]/@src",
+        
+        "default_values": {
+            "title": "No Title",
+            "description": "No Description",
+            "current_bid": "0",
+            "closing_date": "N/A",
+        },
+        "crawl_delay": 2,
+        "notes": "Aggregator. Images scraped dynamically to handle variable CDN paths.",
+    },
 }
 
 

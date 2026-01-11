@@ -24,16 +24,46 @@ def normalize_number(value: str) -> str:
     except ValueError:
         return value
 
+def clean_url(url: str) -> str:
+    """
+    Fixes protocol-relative URLs.
+    Smartly removes cache busters while preserving authentication tokens.
+    """
+    if not url:
+        return None
+    
+    url = clean_text(url)
+    
+    # Fix protocol-relative URLs (e.g., //media... -> https://media...)
+    if url.startswith("//"):
+        url = "https:" + url
+        
+    # Smart Query String Handling
+    if "?" in url:
+        base, query = url.split("?", 1)
+        
+        # HEURISTIC:
+        # If query contains '=', it's likely functional (SAS tokens, IDs) -> KEEP IT
+        # If query has NO '=', it's likely a timestamp/cache-buster -> STRIP IT
+        if "=" not in query:
+            url = base
+        # Else: keep the url as-is with parameters
+            
+    return url
+
 def parse_lot(config, lot_number, auction_id, closing_date, debug=False):
     url = config["base_url"].format(
         auction_id=auction_id,
         lot_number=lot_number
     )
 
-    html = fromstring(get(url).content)
+    # Fetch and parse HTML
+    response = get(url)
+    html = fromstring(response.content)
 
     data = {"lot_number": lot_number}
 
+    # 1. Parse Text Fields
     for field, xpath in config["parsers"].items():
         nodes = html.xpath(xpath)
         if nodes:
@@ -50,14 +80,22 @@ def parse_lot(config, lot_number, auction_id, closing_date, debug=False):
 
         data[field] = value
 
+    # 2. Parse Image URL
+    raw_image_url = None
     if "image_url_xpath" in config:
         imgs = html.xpath(config["image_url_xpath"])
-        data["image_url"] = clean_text(imgs[0]) if imgs else None
+        if imgs:
+            # Handle both attribute strings (e.g. @src) and elements
+            raw_image_url = imgs[0] if isinstance(imgs[0], str) else imgs[0].text_content()
+            
     elif "image_url_pattern" in config:
-        data["image_url"] = config["image_url_pattern"].format(
+        raw_image_url = config["image_url_pattern"].format(
             auction_id=auction_id,
             lot_number=lot_number
         )
+
+    # 3. Clean the Image URL
+    data["image_url"] = clean_url(raw_image_url)
 
     data["closing_date"] = closing_date or config["default_values"].get(
         "closing_date", "N/A"
