@@ -1,11 +1,11 @@
 from pathlib import Path
 from http_client import get
 
-def download_image(config, lot_number, auction_id, image_url=None):
+def download_image(config, lot_number, sale_id, image_url=None):
     """Download auction source image (immutable)."""
     if not image_url and "image_url_pattern" in config:
         image_url = config["image_url_pattern"].format(
-            auction_id=auction_id,
+            sale_id=sale_id,
             lot_number=lot_number
         )
     if not image_url:
@@ -16,7 +16,7 @@ def download_image(config, lot_number, auction_id, image_url=None):
         base = config.get("image_base_url", "")
         image_url = base + image_url
     
-    folder = Path(config["folder"].format(auction_id=auction_id))
+    folder = Path(config["folder"].format(sale_id=sale_id))
     folder.mkdir(parents=True, exist_ok=True)
     source_path = folder / f"Lot_{lot_number:05d}.jpg"
     try:

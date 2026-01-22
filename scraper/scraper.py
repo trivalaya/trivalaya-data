@@ -5,7 +5,7 @@ from image_downloader import download_image
 def scrape_site(
     site_name,
     lot_range,
-    auction_id,
+    sale_id,
     closing_date,
     db_handler,
     download_images=True,
@@ -14,16 +14,20 @@ def scrape_site(
     config = site_configs[site_name]
 
     for lot_number in lot_range:
-        data = parse_lot(config, lot_number, auction_id, closing_date)
+        data = parse_lot(config, lot_number, sale_id, closing_date)
 
         if not data:
             continue
+        data["auction_house"] = site_name
+        data["sale_id"] = sale_id
+        # ✅ ensure lot_url is present (if parse_lot doesn’t already set it)
+        data.setdefault("lot_url", config["base_url"].format(sale_id=sale_id, lot_number=lot_number))
 
         if download_images:
             img = download_image(
                 config,
                 lot_number,
-                auction_id,
+                sale_id,
                 data.get("image_url"),
             )
 
