@@ -51,9 +51,9 @@ def clean_url(url: str) -> str:
             
     return url
 
-def parse_lot(config, lot_number, auction_id, closing_date, debug=False):
+def parse_lot(config, lot_number, sale_id, closing_date, debug=False):
     url = config["base_url"].format(
-        auction_id=auction_id,
+        sale_id=sale_id,
         lot_number=lot_number
     )
 
@@ -62,7 +62,7 @@ def parse_lot(config, lot_number, auction_id, closing_date, debug=False):
     html = fromstring(response.content)
 
     data = {"lot_number": lot_number}
-
+    data["lot_url"] = url
     # 1. Parse Text Fields
     for field, xpath in config["parsers"].items():
         nodes = html.xpath(xpath)
@@ -90,7 +90,7 @@ def parse_lot(config, lot_number, auction_id, closing_date, debug=False):
             
     elif "image_url_pattern" in config:
         raw_image_url = config["image_url_pattern"].format(
-            auction_id=auction_id,
+            sale_id=sale_id,
             lot_number=lot_number
         )
 

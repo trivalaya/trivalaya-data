@@ -5,7 +5,7 @@ Each config defines URL patterns, XPath selectors, and default values.
 USAGE:
     from site_configs import SITE_CONFIGS
     config = SITE_CONFIGS["spink"]
-    url = config["base_url"].format(auction_id="21060", lot_number="000868")
+    url = config["base_url"].format(sale_id="21060", lot_number="000868")
 """
 
 SITE_CONFIGS = {
@@ -15,8 +15,8 @@ SITE_CONFIGS = {
     
     "leu": {
         "name": "leu",
-        "base_url": "https://leunumismatik.com/en/lot/{auction_id}/{lot_number}",
-        "folder": "leu_{auction_id}",
+        "base_url": "https://leunumismatik.com/en/lot/{sale_id}/{lot_number}",
+        "folder": "leu_{sale_id}",
         "parsers": {
             "title": "//div[@id='ctl36_divLot']/b/text()",
             "description": "//div[@id='ctl36_divLot']/text()",
@@ -34,9 +34,9 @@ SITE_CONFIGS = {
     
     "gorny": {
         "name": "gorny",
-        "base_url": "https://auktionen.gmcoinart.de/Los/{auction_id}/{lot_number}.0",
-        "image_url_pattern": "https://images.auex.de/img/9//{auction_id}/{lot_number:05d}q00.jpg",
-        "folder": "gorny_{auction_id}",
+        "base_url": "https://auktionen.gmcoinart.de/Los/{sale_id}/{lot_number}.0",
+        "image_url_pattern": "https://images.auex.de/img/9//{sale_id}/{lot_number:05d}q00.jpg",
+        "folder": "gorny_{sale_id}",
         "parsers": {
             "title": "(//div[@class='description']//b)[1]/text() | (//div[@class='description']//strong)[1]/text()",
             "description": "string(//div[@class='description'])",
@@ -52,8 +52,8 @@ SITE_CONFIGS = {
     
     "nomos": {
         "name": "nomos",
-        "base_url": "https://nomosag.com/nomos-{auction_id}/{lot_number}",
-        "folder": "nomos_{auction_id}",
+        "base_url": "https://nomosag.com/nomos-{sale_id}/{lot_number}",
+        "folder": "nomos_{sale_id}",
         "parsers": {
             "title": "(//p[@class='o-singleLot__description']/b)[1]/text()",
             "description": "string((//p[@class='o-singleLot__description'])[1])",
@@ -70,8 +70,8 @@ SITE_CONFIGS = {
     
     "obolos": {
         "name": "obolos",
-        "base_url": "https://nomosag.com/obolos-{auction_id}/{lot_number}",
-        "folder": "obolos_{auction_id}",
+        "base_url": "https://nomosag.com/obolos-{sale_id}/{lot_number}",
+        "folder": "obolos_{sale_id}",
         "parsers": {
             "title": "(//p[@class='o-singleLot__description']/b)[1]/text()",
             "description": "string((//p[@class='o-singleLot__description'])[1])",
@@ -90,7 +90,7 @@ SITE_CONFIGS = {
         "name": "cng",
         "base_url": "https://cngcoins.com/Lot.aspx?LOT_ID={lot_number}",
         "image_base_url": "https://cngcoins.com",
-        "folder": "cng_{auction_id}",
+        "folder": "cng_{sale_id}",
         "parsers": {
             "title": "//h3[@id='_ctl0_bodyContentPlaceHolder_txtName']/text()",
             "description": "//p[@id='_ctl0_bodyContentPlaceHolder_txtDescription']//text()",
@@ -112,10 +112,10 @@ SITE_CONFIGS = {
     "spink": {
         "name": "spink",
         # URL Pattern: https://www.spink.com/lot/21060000868
-        # Format: {auction_id}{lot_number} where lot_number is zero-padded to 6 digits
+        # Format: {sale_id}{lot_number} where lot_number is zero-padded to 6 digits
         # Example: auction 21060, lot 868 -> 21060000868
-        "base_url": "https://www.spink.com/lot/{auction_id}{lot_number:06d}",
-        "folder": "spink_{auction_id}",
+        "base_url": "https://www.spink.com/lot/{sale_id}{lot_number:06d}",
+        "folder": "spink_{sale_id}",
         "currency": "GBP",
         "parsers": {
                     # Title - first bold text
@@ -128,7 +128,7 @@ SITE_CONFIGS = {
         # Image URL pattern from Cloudfront CDN
         # Example: https://d3ums4016ncdkp.cloudfront.net/auction/main/21060/21060_868_1.jpg
         "image_url_xpath": "//img[contains(@src, 'cloudfront.net')]/@src | //img[contains(@class, 'img-responsive')]/@src",
-        "image_url_pattern": "https://d3ums4016ncdkp.cloudfront.net/auction/main/{auction_id}/{auction_id}_{lot_number}_1.jpg",
+        "image_url_pattern": "https://d3ums4016ncdkp.cloudfront.net/auction/main/{sale_id}/{sale_id}_{lot_number}_1.jpg",
         "default_values": {
             "title": "No Title",
             "description": "No Description", 
@@ -147,7 +147,7 @@ SITE_CONFIGS = {
         # Or via AUEX: https://auex.de/de/product/{lot_id}
         # The lot_id appears to be a global ID, not auction+lot
         "base_url": "https://www.kuenker.de/en/archiv/stueck/{lot_number}",
-        "folder": "kuenker_{auction_id}",
+        "folder": "kuenker_{sale_id}",
         "currency": "EUR",
         "parsers": {
             # Künker lot pages have structured data
@@ -173,9 +173,9 @@ SITE_CONFIGS = {
     # Alternative Künker config for AUEX platform (their live auction system)
     "kuenker_auex": {
         "name": "kuenker_auex", 
-        # AUEX lot format: auction_id + lot_number
-        "base_url": "https://auex.de/de/product/{auction_id}-{lot_number}",
-        "folder": "kuenker_auex_{auction_id}",
+        # AUEX lot format: sale_id + lot_number
+        "base_url": "https://auex.de/de/product/{sale_id}-{lot_number}",
+        "folder": "kuenker_auex_{sale_id}",
         "currency": "EUR",
         "parsers": {
             "title": "//h1[contains(@class, 'title')]/text()",
@@ -192,8 +192,8 @@ SITE_CONFIGS = {
     },
     "numisbids": {
         "name": "numisbids",
-        "base_url": "https://www.numisbids.com/n.php?p=lot&sid={auction_id}&lot={lot_number}",
-        "folder": "numisbids_{auction_id}",
+        "base_url": "https://www.numisbids.com/n.php?p=lot&sid={sale_id}&lot={lot_number}",
+        "folder": "numisbids_{sale_id}",
         "parsers": {
             # Title: First bold text in description areas
             "title": "(//div[@class='lot_description']//b)[1]/text() | //div[@class='lotdesc']//b[1]/text()",
@@ -228,20 +228,20 @@ SITE_CONFIGS = {
 # HELPER FUNCTIONS
 # =========================================================================
 
-def get_spink_url(auction_id: int, lot_number: int) -> str:
+def get_spink_url(sale_id: int, lot_number: int) -> str:
     """
     Generate Spink lot URL.
     
-    Spink URL format: https://www.spink.com/lot/{auction_id}{lot_number:06d}
+    Spink URL format: https://www.spink.com/lot/{sale_id}{lot_number:06d}
     
     Examples:
         get_spink_url(21060, 868) -> "https://www.spink.com/lot/21060000868"
         get_spink_url(16019, 53)  -> "https://www.spink.com/lot/16019000053"
     """
-    return f"https://www.spink.com/lot/{auction_id}{lot_number:06d}"
+    return f"https://www.spink.com/lot/{sale_id}{lot_number:06d}"
 
 
-def get_spink_image_url(auction_id: int, lot_number: int) -> str:
+def get_spink_image_url(sale_id: int, lot_number: int) -> str:
     """
     Generate Spink image URL from Cloudfront CDN.
     
@@ -249,7 +249,7 @@ def get_spink_image_url(auction_id: int, lot_number: int) -> str:
         get_spink_image_url(21060, 868) -> 
         "https://d3ums4016ncdkp.cloudfront.net/auction/main/21060/21060_868_1.jpg"
     """
-    return f"https://d3ums4016ncdkp.cloudfront.net/auction/main/{auction_id}/{auction_id}_{lot_number}_1.jpg"
+    return f"https://d3ums4016ncdkp.cloudfront.net/auction/main/{sale_id}/{sale_id}_{lot_number}_1.jpg"
 
 
 def get_kuenker_archive_url(lot_id: int) -> str:
@@ -262,7 +262,22 @@ def get_kuenker_archive_url(lot_id: int) -> str:
         get_kuenker_archive_url(281856) -> "https://www.kuenker.de/en/archiv/stueck/281856"
     """
     return f"https://www.kuenker.de/en/archiv/stueck/{lot_id}"
-
+def build_lot_url(auction_house: str, sale_id, lot_number):
+    if not auction_house or lot_number is None:
+        return None
+    key = str(auction_house).lower().strip()
+    cfg = SITE_CONFIGS.get(key)
+    if not cfg:
+        return None
+    base = cfg.get("base_url")
+    if not base:
+        return None
+    # Spink needs int for :06d formatting
+    fmt = {
+        "sale_id": sale_id,
+        "lot_number": int(lot_number) if key == "spink" else lot_number,
+    }
+    return base.format(**fmt)
 
 # =========================================================================
 # SCEATTA-SPECIFIC SEARCH QUERIES

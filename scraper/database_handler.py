@@ -60,19 +60,42 @@ class DatabaseHandler:
                 ssl_disabled=self.ssl_disabled
             )
             cursor = conn.cursor()
-            query = '''
-                INSERT INTO auction_data (lot_number, title, description, current_bid, image_url,image_path, closing_date)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            '''
+            query = """
+                    INSERT INTO auction_data (
+                        auction_house,
+                        sale_id,
+                        lot_number,
+                        lot_url,
+                        title,
+                        description,
+                        current_bid,
+                        image_url,
+                        image_path,
+                        closing_date
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON DUPLICATE KEY UPDATE
+                        lot_url      = VALUES(lot_url),
+                        title        = VALUES(title),
+                        description  = VALUES(description),
+                        current_bid  = VALUES(current_bid),
+                        image_url    = VALUES(image_url),
+                        image_path   = VALUES(image_path),
+                        closing_date = VALUES(closing_date)
+                """
             values = (
-                data.get("lot_number"),
-                data.get("title", "No Title"),
-                data.get("description", "No Description"),
-                data.get("current_bid", "0"),
-                data.get("image_url", ""),
-                data.get("image_path", ""),
-                data.get("closing_date", "N/A")
-            )
+                    data.get("auction_house"),              # e.g. "spink", "cng", "leu"
+                    data.get("sale_id"),                    # your CLI-passed sale id
+                    data.get("lot_number"),                 # int or string, but consistent
+                    data.get("lot_url", ""),
+
+                    data.get("title", "No Title"),
+                    data.get("description", "No Description"),
+                    data.get("current_bid", "0"),
+                    data.get("image_url", ""),
+                    data.get("image_path", ""),
+                    data.get("closing_date", "N/A"),
+                )
             cursor.execute(query, values)
             conn.commit()
             cursor.close()

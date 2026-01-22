@@ -8,7 +8,7 @@ def main():
     parser.add_argument("site")
     parser.add_argument("start", type=int)
     parser.add_argument("end", type=int)
-    parser.add_argument("auction_id", type=int)
+    parser.add_argument("sale_id", type=int)
     parser.add_argument("closing_date")
     parser.add_argument("--download-images", action="store_true")
 
@@ -24,7 +24,7 @@ def main():
     scrape_site(
         site_name=args.site,
         lot_range=range(args.start, args.end + 1),
-        auction_id=args.auction_id,
+        sale_id=args.sale_id,
         closing_date=args.closing_date,
         db_handler=db,
         download_images=args.download_images,
