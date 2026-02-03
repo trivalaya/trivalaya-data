@@ -14,7 +14,7 @@ def scrape_site(
     config = site_configs[site_name]
 
     for lot_number in lot_range:
-        data = parse_lot(config, lot_number, sale_id, closing_date)
+        data = parse_lot(config, lot_number, sale_id, closing_date, site_name=site_name)
 
         if not data:
             continue
@@ -25,11 +25,12 @@ def scrape_site(
 
         if download_images:
             img = download_image(
-                config,
-                lot_number,
-                sale_id,
-                data.get("image_url"),
-            )
+            config,
+            lot_number,
+            sale_id,
+            data.get("image_url"),
+            site_name=site_name,
+        )
 
             if img:
                 data["image_path"] = img["image_path"]

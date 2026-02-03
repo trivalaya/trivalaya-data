@@ -2,6 +2,7 @@ import re
 import unicodedata
 from lxml.html import fromstring
 from http_client import get
+from image_downloader import save_raw_snapshot
 
 ZERO_WIDTH_RE = re.compile(r'[\u200B-\u200D\uFEFF]+')
 WS_RE = re.compile(r'\s+')
@@ -51,18 +52,37 @@ def clean_url(url: str) -> str:
             
     return url
 
-def parse_lot(config, lot_number, sale_id, closing_date, debug=False):
+def parse_lot(config, lot_number, sale_id, closing_date, debug=False, site_name: str | None = None):
     url = config["base_url"].format(
         sale_id=sale_id,
         lot_number=lot_number
     )
 
-    # Fetch and parse HTML
+    # Fetch HTML (http_client.get uses requests.Session + raise_for_status())
     response = get(url)
+
+    # ✅ Forensic snapshot: save raw bytes BEFORE parsing
+    # Uses passed site_name if provided, else falls back to config["name"] or "unknown"
+    try:
+        effective_site = site_name or config.get("name", "unknown")
+        save_raw_snapshot(
+            config=config,
+            html_bytes=response.content,
+            sale_id=sale_id,
+            lot_number=lot_number,
+            site_name=effective_site,
+        )
+    except Exception as e:
+        # Never fail scrape because snapshot failed
+        if debug:
+            print(f"[snapshot] lot {lot_number}: {e}")
+
+    # Parse HTML
     html = fromstring(response.content)
 
     data = {"lot_number": lot_number}
     data["lot_url"] = url
+
     # 1. Parse Text Fields
     for field, xpath in config["parsers"].items():
         nodes = html.xpath(xpath)
@@ -85,9 +105,8 @@ def parse_lot(config, lot_number, sale_id, closing_date, debug=False):
     if "image_url_xpath" in config:
         imgs = html.xpath(config["image_url_xpath"])
         if imgs:
-            # Handle both attribute strings (e.g. @src) and elements
             raw_image_url = imgs[0] if isinstance(imgs[0], str) else imgs[0].text_content()
-            
+
     elif "image_url_pattern" in config:
         raw_image_url = config["image_url_pattern"].format(
             sale_id=sale_id,
